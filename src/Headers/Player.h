@@ -21,7 +21,7 @@ public:
 	void MoveY(const Uint8* keys, const Map& map);
 	
     float m_XFriction, m_XVel, m_XAccel, m_YVel, m_YAccel;
-	bool isOnGround, rightMovementPossible, leftMovementPossible, jumped; //Those last ones seem pretty shitty to me brodie
+	bool isOnGround, jumped; //Those last ones seem pretty shitty to me brodie
 };
 
 #endif // PLAYER_H

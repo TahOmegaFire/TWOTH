@@ -76,9 +76,6 @@ int main(int argc, char* argv[])
 		mainPlayer.Update(currentKeyStates, mainMap);
         mainMap.Update();
 		
-		if(currentKeyStates[SDL_SCANCODE_SPACE])
-			UtilFn::Print2Values(mainPlayer.collisionBox.m_X, mainPlayer.collisionBox.m_Y);
-		
 		camera.x = mainPlayer.collisionBox.m_X - (WINDOW_WIDTH / 2);
 		camera.y = mainPlayer.collisionBox.m_Y - (WINDOW_HEIGHT / 2);
 		

@@ -11,7 +11,7 @@ Player::Player()
 	collisionBox.m_W = m_Texture.m_Width;
 	collisionBox.m_H = 64; //You'll have to eventually change this thing fam
 	//UtilFn::Print2Values(collisionBox.m_W, collisionBox.m_H);
-	rightMovementPossible = leftMovementPossible = true;
+	isOnGround = true;
 }
 
 Player::~Player()
@@ -27,93 +27,28 @@ bool Player::LoadEntity(const char* path)
 void Player::Update(const Uint8* keys, const Map& map)
 {
     //Movement
+	int curTileX = collisionBox.m_X / 64;
+	int curTileY = collisionBox.m_Y / 64;
+	//if(keys[SDL_SCANCODE_SPACE])
+		//UtilFn::Print2Values(curTileX, curTileY);
     MoveX(keys, map);
 	MoveY(keys, map);
 }
 
 void Player::MoveX(const Uint8* keys, const Map& map)
 {
-	bool collided = false;
-	
 	CollisionBox collider(collisionBox.m_X, collisionBox.m_Y, collisionBox.m_W, collisionBox.m_H);
-	
-	/*if(m_XVel > 0)
-		collider.m_X += collisionBox.m_W;*/
-	
-	std::vector<CollisionBox> colTiles(map.GetCollidingTilesF(collider));
-		
-	/*for(size_t i = 0; i < colTiles.size(); i++)
-	{
-		if(colTiles[i].m_Type == Tile::TILE1)
-		{
-			collided = true;
-			if(m_XVel > 0)
-			{
-				//collisionBox.m_X -= 1;
-				rightMovementPossible = false;
-			}
-			else
-			{
-				//collisionBox.m_X += 1;
-				leftMovementPossible = false;
-			}
-			m_XVel = 0;
-		}
-	}*/
-	for(size_t i = 0; i < colTiles.size(); i++)
-	{
-		//std::cout << i << std::endl;
-		switch(collisionBox.TestCollisionV(colTiles[i]))
-		{
-		case 0:
-			break;
-			
-		case 1:
-			leftMovementPossible = false;
-			collisionBox.m_X += 1;
-			m_XVel = 0;
-			collided = true;
-			std::cout << "lmao";
-			break;
-			
-		case 2:
-			collided = true;
-			rightMovementPossible = false;
-			m_XVel = 0;
-			collisionBox.m_X -= 1;
-			std::cout << "lmao";
-			break;
-			
-		default:
-			//std::cout << "lmao";
-			break;
-		}
-	
-		if(collided)
-			break;
-	}
-	
-	if(!collided)
-		rightMovementPossible = leftMovementPossible = true;
 	
 	if(keys[SDL_SCANCODE_RIGHT])
 	{
-		if(rightMovementPossible)
-		{
-			if(m_XVel < 5)
-				m_XVel += m_XAccel;
-			leftMovementPossible = true;
-		}
+		if(m_XVel < 5)
+			m_XVel += m_XAccel;
 	}
 
 	else if(keys[SDL_SCANCODE_LEFT])
 	{
-		if(leftMovementPossible)
-		{
-			if(m_XVel > -5)
-				m_XVel -= m_XAccel;
-			rightMovementPossible = true;
-		}
+		if(m_XVel > -5)
+			m_XVel -= m_XAccel;
 	}
 
 	else
@@ -135,6 +70,20 @@ void Player::MoveX(const Uint8* keys, const Map& map)
 		}
 	}
 	
+	for(USI i = 0; i < 2; i++)
+	{
+			int curTileX = collisionBox.m_X / 64;
+			int curTileY = collisionBox.m_Y / 64;
+			if(map.m_Tiles[curTileX + i][curTileY].m_Type == Tile::TILE1)
+			{
+				if((i == 0 && m_XVel < 0) || (i == 1 && m_XVel > 0))
+					m_XVel = 0;
+				//if(keys[SDL_SCANCODE_SPACE])
+					//std::cout << "Collision at " << curTileX + i << ", " << curTileY << std::endl;
+				break;
+			}
+	}
+	
 	//std::cout << m_XVel << std::endl;
 
     collisionBox.m_X += m_XVel;
@@ -142,8 +91,6 @@ void Player::MoveX(const Uint8* keys, const Map& map)
 
 void Player::MoveY(const Uint8* keys, const Map& map)
 {	
-	bool collided = false;
-	
 	if(!isOnGround)
 	{
 		if(!keys[SDL_SCANCODE_Z])
@@ -153,36 +100,6 @@ void Player::MoveY(const Uint8* keys, const Map& map)
 		}
 		
 		m_YVel -= GRAVITY;
-		
-		CollisionBox collider(collisionBox.m_X + 1, collisionBox.m_Y, collisionBox.m_W, 0); //Top collision
-	
-		std::vector<Tile> colTiles(map.GetCollidingTiles(collider));
-		
-		for(size_t i = 0; i < colTiles.size(); i++)
-		{
-			if(colTiles[i].m_Type == Tile::TILE1)
-			{
-				collided = true;
-				m_YVel = 0;	
-				collisionBox.m_Y = colTiles[i].y * 64 + collisionBox.m_H;
-			}
-		}
-		
-		collider.m_X = collisionBox.m_X + 1; collider.m_Y = collisionBox.m_Y + collisionBox.m_H; collider.m_W = collisionBox.m_W; //Bottom (text) collision
-		
-		colTiles.clear();
-		colTiles = map.GetCollidingTiles(collider);
-		
-		for(size_t i = 0; i < colTiles.size(); i++)
-		{
-			if(colTiles[i].m_Type == Tile::TILE1)
-			{
-				collided = true;
-				m_YVel = 0;	
-				isOnGround = true;
-				collisionBox.m_Y = colTiles[i].y * 64 - collisionBox.m_H;
-			}
-		}
 	}
 	
 	else
@@ -199,21 +116,45 @@ void Player::MoveY(const Uint8* keys, const Map& map)
 		
 		else
 			jumped = false;
-		
-		CollisionBox collider(collisionBox.m_X, collisionBox.m_Y + collisionBox.m_H, collisionBox.m_W, 1); //Bottom collision
+	}
 	
-		std::vector<Tile> colTiles(map.GetCollidingTiles(collider));
-		//std::vector<Tile&> colTiles(map.GetCollidingTilesF(collider));
-
-		for(size_t i = 0; i < colTiles.size(); i++)
+	int curTileX = collisionBox.m_X / 64;
+	int curTileY = collisionBox.m_Y / 64;
+	
+	//for(int i = 0; i < 2; i++)
+	//{
+	if(map.m_Tiles[curTileX][curTileY].m_Type == Tile::TILE1)
+	{
+		if(m_YVel < 0)
+			m_YVel = 0;
+	}
+	
+	if(m_YVel > 0)
+	{
+		if(map.m_Tiles[curTileX + 1][curTileY + 1].m_Type == Tile::TILE1)
 		{
-			if(colTiles[i].m_Type == Tile::TILE1)
-				collided = true;
-			
-			if(!collided)
-				isOnGround = false;
+			m_YVel = 0;
+			collisionBox.m_Y = curTileY * 64;
+			isOnGround = true;
 		}
 	}
+	
+	if(map.m_Tiles[curTileX][curTileY + 1].m_Type == Tile::TILE1)
+	{
+		if(m_YVel > 0)
+		{
+			m_YVel = 0;
+			collisionBox.m_Y = curTileY * 64;
+		}
+		isOnGround = true;
+	}
+
+	else if(map.m_Tiles[curTileX][curTileY + 1].m_Type == Tile::EMPTY)
+		isOnGround = false;
+	//}
+	
+	if(keys[SDL_SCANCODE_SPACE])
+		std::cout << m_YVel << std::endl;
 	
 	collisionBox.m_Y += m_YVel;
 }
