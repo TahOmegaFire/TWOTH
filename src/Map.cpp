@@ -50,8 +50,8 @@ void Map::CreateTestMap()
 	m_Tiles[4][18].m_Type = Tile::TILE1;
 	m_Tiles[6][18].m_Type = Tile::TILE1;
 	m_Tiles[6][17].m_Type = Tile::TILE1;
-	m_Tiles[8][18].m_Type = Tile::TILE1;
-	m_Tiles[8][17].m_Type = Tile::TILE1;
+	//m_Tiles[8][18].m_Type = Tile::TILE1;
+	//m_Tiles[8][17].m_Type = Tile::TILE1;
 	m_Tiles[8][16].m_Type = Tile::TILE1;
 	m_Tiles[11][18].m_Type = Tile::TILE1;
 	m_Tiles[13][17].m_Type = Tile::TILE1;
