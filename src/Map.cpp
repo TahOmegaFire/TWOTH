@@ -7,7 +7,6 @@ Map::Map()
 	floor1.LoadTexture("Res/Img/Tiles/ye.png", false);
 	
 	CleanMap();
-	std::cout << "ass\n";
 }
 
 Map::~Map()
