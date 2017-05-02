@@ -38,7 +38,6 @@ void Player::Update(const Uint8* keys, const Map& map)
 
 void Player::MoveX(const Uint8* keys, const Map& map)
 {	
-	//std::cout << m_XVel << std::endl;
 	if(keys[SDL_SCANCODE_RIGHT])
 	{
 		if(m_XVel < 5)
@@ -88,30 +87,16 @@ void Player::MoveX(const Uint8* keys, const Map& map)
 	
 	if(map.m_Tiles[nextTileX2][curTileY].m_Type == Tile::TILE1)
 	{
-		collisionBox.m_X = (curTileX1 + 1) * 64 - collisionBox.m_W; //What is this hack
+		collisionBox.m_X = nextTileX1 * 64 + 64 - collisionBox.m_W - 1; //What is this hack
 		m_XVel = 0;
 	}
-	
-	/*if(map.m_Tiles[curTileX1][curTileY].m_Type == Tile::TILE1)
-	{
-		if(m_XVel < 0)
-			m_XVel = 0;
-	}
-	
-	if(map.m_Tiles[curTileX2][curTileY].m_Type == Tile::TILE1)
-	{
-		if(m_XVel > 0)
-			m_XVel = 0;
-	}*/
-	
-	//Check for m_X + m_XVel
 
     collisionBox.m_X += m_XVel;
 }
 
 void Player::MoveY(const Uint8* keys, const Map& map)
-{	
-	if(map.m_Tiles[curTileX1][curTileY].m_Type == Tile::TILE1 || map.m_Tiles[curTileX2][curTileY].m_Type == Tile::TILE1)
+{
+	/*if(map.m_Tiles[curTileX1][curTileY].m_Type == Tile::TILE1 || map.m_Tiles[curTileX2][curTileY].m_Type == Tile::TILE1)
 	{
 		if(m_YVel < 0)
 			m_YVel = 0;
@@ -122,9 +107,9 @@ void Player::MoveY(const Uint8* keys, const Map& map)
 		m_YVel = 0;
 		collisionBox.m_Y = curTileY * 64;
 		isOnGround = true;
-	}
+	}*/
 
-	else if(map.m_Tiles[curTileX1][curTileY + 1].m_Type == Tile::EMPTY && map.m_Tiles[curTileX2][curTileY + 1].m_Type == Tile::EMPTY)
+	/*else */if(map.m_Tiles[curTileX1][curTileY + 1].m_Type == Tile::EMPTY && map.m_Tiles[curTileX2][curTileY + 1].m_Type == Tile::EMPTY)
 			isOnGround = false;
 	
 	if(!isOnGround)
@@ -152,6 +137,36 @@ void Player::MoveY(const Uint8* keys, const Map& map)
 		
 		else
 			jumped = false;
+	}
+	
+	int nextTileY;
+	if(m_YVel < 0)
+		nextTileY = (collisionBox.m_Y + m_YVel) / 64;
+	else if(m_YVel > 0)
+		nextTileY = (collisionBox.m_Y + collisionBox.m_H + m_YVel) / 64;
+	
+	if(map.m_Tiles[curTileX1][nextTileY].m_Type == Tile::TILE1)
+	{
+		if(m_YVel < 0)
+			collisionBox.m_Y = curTileY * 64;
+		else if(m_YVel > 0)
+		{
+			collisionBox.m_Y = nextTileY * 64 - collisionBox.m_H;
+			isOnGround = true;
+		}
+		m_YVel = 0;
+	}
+	
+	if(map.m_Tiles[curTileX2][nextTileY].m_Type == Tile::TILE1)
+	{
+		if(m_YVel < 0)
+			collisionBox.m_Y = curTileY * 64;
+		else if(m_YVel > 0)
+		{
+			collisionBox.m_Y = nextTileY * 64 - collisionBox.m_H;
+			isOnGround = true;
+		}
+		m_YVel = 0;
 	}
 	
 	if(keys[SDL_SCANCODE_SPACE])
