@@ -37,25 +37,26 @@ void Player::Update(const Uint8* keys, const Map& map)
 }
 
 void Player::MoveX(const Uint8* keys, const Map& map)
-{
-	//CollisionBox collider(collisionBox.m_X, collisionBox.m_Y, collisionBox.m_W, collisionBox.m_H);
-	
+{	
+	//std::cout << m_XVel << std::endl;
 	if(keys[SDL_SCANCODE_RIGHT])
 	{
-		if(rightMovement)
+		if(m_XVel < 5)
 		{
-			if(m_XVel < 5)
-				m_XVel += m_XAccel;
+			!isOnGround ? m_XVel += (m_XAccel * 2 / 3) : m_XVel += m_XAccel;
 		}
+		else
+			m_XVel = 5;
 	}
 
 	else if(keys[SDL_SCANCODE_LEFT])
 	{
-		if(leftMovement)
+		if(m_XVel > -5)
 		{
-			if(m_XVel > -5)
-				m_XVel -= m_XAccel;
+			!isOnGround ? m_XVel -= (m_XAccel * 2 / 3) : m_XVel -= m_XAccel;
 		}
+		else
+			m_XVel = -5;
 	}
 
 	else
@@ -77,33 +78,33 @@ void Player::MoveX(const Uint8* keys, const Map& map)
 		}
 	}
 	
-	for(USI i = 0; i < 2; i++)
+	int nextTileX1 = (collisionBox.m_X + m_XVel) / 64;
+	int nextTileX2 = (collisionBox.m_X + collisionBox.m_W + m_XVel) / 64;
+	if(map.m_Tiles[nextTileX1][curTileY].m_Type == Tile::TILE1)
 	{
-			if(map.m_Tiles[curTileX1 + i][curTileY].m_Type == Tile::TILE1)
-			{
-				if((i == 0 && m_XVel < 0) || (i == 1 && m_XVel > 0))
-				{
-					m_XVel = 0;
-					if(i == 0)
-					{
-						//collisionBox.m_X = (curTileX2) * 64;
-						leftMovement = false;
-					}
-					else
-					{
-						//collisionBox.m_X = curTileX1 * 64;
-						rightMovement = false;
-					}
-				}
-				//if(keys[SDL_SCANCODE_SPACE])
-					//std::cout << "Collision at " << curTileX + i << ", " << curTileY << std::endl;
-				break;
-			}
-			
-			leftMovement = rightMovement = true;
+		collisionBox.m_X = curTileX1 * 64;
+		m_XVel = 0;
 	}
 	
-	//std::cout << m_XVel << std::endl;
+	if(map.m_Tiles[nextTileX2][curTileY].m_Type == Tile::TILE1)
+	{
+		collisionBox.m_X = (curTileX1 + 1) * 64 - collisionBox.m_W; //What is this hack
+		m_XVel = 0;
+	}
+	
+	/*if(map.m_Tiles[curTileX1][curTileY].m_Type == Tile::TILE1)
+	{
+		if(m_XVel < 0)
+			m_XVel = 0;
+	}
+	
+	if(map.m_Tiles[curTileX2][curTileY].m_Type == Tile::TILE1)
+	{
+		if(m_XVel > 0)
+			m_XVel = 0;
+	}*/
+	
+	//Check for m_X + m_XVel
 
     collisionBox.m_X += m_XVel;
 }
@@ -131,7 +132,7 @@ void Player::MoveY(const Uint8* keys, const Map& map)
 		if(!keys[SDL_SCANCODE_Z])
 		{
 			if(m_YVel < 0)
-				m_YVel -= GRAVITY;
+				m_YVel -= GRAVITY * 2;
 		}
 		
 		m_YVel -= GRAVITY;
