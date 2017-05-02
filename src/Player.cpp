@@ -10,7 +10,6 @@ Player::Player()
     m_XFriction = 0.0f;
 	collisionBox.m_W = m_Texture.m_Width;
 	collisionBox.m_H = 64; //You'll have to eventually change this thing fam
-	//UtilFn::Print2Values(collisionBox.m_W, collisionBox.m_H);
 	isOnGround = leftMovement = rightMovement = true;
 }
 
@@ -30,14 +29,14 @@ void Player::Update(const Uint8* keys, const Map& map)
 	curTileX1 = collisionBox.m_X / 64;
 	curTileY= collisionBox.m_Y / 64;
 	curTileX2 = (collisionBox.m_X + collisionBox.m_W) / 64;
-	//if(keys[SDL_SCANCODE_SPACE])
-		//UtilFn::Print2Values(curTileX, curTileY);
-    MoveX(keys, map);
+    
+	MoveX(keys, map);
 	MoveY(keys, map);
 }
 
 void Player::MoveX(const Uint8* keys, const Map& map)
-{	
+{
+	//Reaction to key presses
 	if(keys[SDL_SCANCODE_RIGHT])
 	{
 		if(m_XVel < 5)
@@ -63,7 +62,7 @@ void Player::MoveX(const Uint8* keys, const Map& map)
 		if(m_XVel > 0)
 		{
 			if(m_XVel > 0.4f)
-				m_XVel -= m_XAccel * 3 / 2;
+				m_XVel -= m_XAccel * 2;
 			else
 				m_XVel = 0;
 		}
@@ -71,11 +70,13 @@ void Player::MoveX(const Uint8* keys, const Map& map)
 		else if(m_XVel < 0)
 		{
 			if(m_XVel < -0.4f)
-				m_XVel += m_XAccel * 3 / 2;
+				m_XVel += m_XAccel * 2;
 			else
 				m_XVel = 0;
 		}
 	}
+	
+	//Collision check on X axis
 	
 	int nextTileX1 = (collisionBox.m_X + m_XVel) / 64;
 	int nextTileX2 = (collisionBox.m_X + collisionBox.m_W + m_XVel) / 64;
@@ -96,20 +97,7 @@ void Player::MoveX(const Uint8* keys, const Map& map)
 
 void Player::MoveY(const Uint8* keys, const Map& map)
 {
-	/*if(map.m_Tiles[curTileX1][curTileY].m_Type == Tile::TILE1 || map.m_Tiles[curTileX2][curTileY].m_Type == Tile::TILE1)
-	{
-		if(m_YVel < 0)
-			m_YVel = 0;
-	}
-	
-	if(map.m_Tiles[curTileX1][curTileY + 1].m_Type == Tile::TILE1 || map.m_Tiles[curTileX2][curTileY + 1].m_Type == Tile::TILE1)
-	{
-		m_YVel = 0;
-		collisionBox.m_Y = curTileY * 64;
-		isOnGround = true;
-	}*/
-
-	/*else */if(map.m_Tiles[curTileX1][curTileY + 1].m_Type == Tile::EMPTY && map.m_Tiles[curTileX2][curTileY + 1].m_Type == Tile::EMPTY)
+	if(map.m_Tiles[curTileX1][curTileY + 1].m_Type == Tile::EMPTY && map.m_Tiles[curTileX2][curTileY + 1].m_Type == Tile::EMPTY)
 			isOnGround = false;
 	
 	if(!isOnGround)
@@ -139,6 +127,7 @@ void Player::MoveY(const Uint8* keys, const Map& map)
 			jumped = false;
 	}
 	
+	//Collision check on Y axis
 	int nextTileY;
 	if(m_YVel < 0)
 		nextTileY = (collisionBox.m_Y + m_YVel) / 64;

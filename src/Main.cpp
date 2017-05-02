@@ -79,17 +79,6 @@ int main(int argc, char* argv[])
 		camera.x = mainPlayer.collisionBox.m_X - (WINDOW_WIDTH / 2);
 		camera.y = mainPlayer.collisionBox.m_Y - (WINDOW_HEIGHT / 2);
 		
-		//std::cout << camera.x << " | " << camera.y << std::endl;
-		
-		/*if(currentKeyStates[SDL_SCANCODE_UP])
-            camera.y -= 5;
-        else if(currentKeyStates[SDL_SCANCODE_DOWN])
-            camera.y += 5;
-        if(currentKeyStates[SDL_SCANCODE_LEFT])
-            camera.x -= 5;
-        else if(currentKeyStates[SDL_SCANCODE_RIGHT])
-            camera.x += 5;*/
-		
 		//Render phase
         SDL_RenderClear(mainRenderer);
 		
