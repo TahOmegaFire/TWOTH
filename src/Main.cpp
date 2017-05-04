@@ -24,19 +24,6 @@ int main(int argc, char* argv[])
         logger.WriteToLog("Close program");
         return -1;
     }
-	/*//Initialization of Box2D
-	b2Vec2 gravity(0.0f, -10.0f);
-	
-	b2World world(gravity);
-	b2BodyDef groundBodyDef;
-	groundBodyDef.position.Set(0.0f, -10.0f);
-	
-	b2Body* groundBody = world.CreateBody(&groundBodyDef);
-	
-	b2PolygonShape groundBox;
-	groundBox.SetAsBox(50.f, 10.0f);
-	
-	*///Endof Init
 
     bool endProgram = false;
 
@@ -72,7 +59,12 @@ int main(int argc, char* argv[])
         currentKeyStates = SDL_GetKeyboardState(NULL);
         if(currentKeyStates[SDL_SCANCODE_ESCAPE])
             endProgram = true;
-
+		if(currentKeyStates[SDL_SCANCODE_R])
+		{
+			mainMap.LoadMap("Res/Data/Map/mapTest.dat");
+			mainPlayer.collisionBox.m_X = mainMap.spawnPoint.x;
+			mainPlayer.collisionBox.m_Y = mainMap.spawnPoint.y;
+		}
 		mainPlayer.Update(currentKeyStates, mainMap);
         mainMap.Update();
 		

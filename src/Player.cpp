@@ -10,7 +10,7 @@ Player::Player()
     m_XFriction = 0.0f;
 	collisionBox.m_W = m_Texture.m_Width;
 	collisionBox.m_H = 64; //You'll have to eventually change this thing fam
-	isOnGround = leftMovement = rightMovement = true;
+	isOnGround = true;
 }
 
 Player::~Player()

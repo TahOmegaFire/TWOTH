@@ -17,11 +17,11 @@ Map::~Map()
 void Map::CleanMap()
 {
 	m_Tiles.clear();
-	for(USI i = 0; i < m_Width + 2; i++)
+	for(USI i = 0; i < m_Width; i++)
 	{
 		std::vector<Tile> nVector;
 		
-		for(USI j = 0; j < m_Length + 2; j++)
+		for(USI j = 0; j < m_Length; j++)
 		{
 			Tile nTile;
 			nTile.m_Type = Tile::EMPTY;
@@ -61,8 +61,73 @@ void Map::CreateTestMap()
 	//TO DO: Make collisions
 }
 
+void Map::LoadMap(std::string map_dir)
+{
+	std::ifstream f_Map;
+	f_Map.open(map_dir.c_str(), std::ifstream::in);
+	std::string s_Map;
+	USI len = 0;
+	USI wid = 0;
+	
+	while(getline(f_Map, s_Map))
+	{
+		std::cout << s_Map << std::endl;
+		++len;
+		if(s_Map.size() > wid)
+		{
+			if(wid != 0)
+				std::cout << "Warning: Variable size in map file" << std::endl;
+			wid = s_Map.size();
+		}
+	}
+	
+	m_Length = len;
+	m_Width = wid;
+	//check what values are m_Len and m_Wid
+	
+	CleanMap();
+	std::cout << "We good nig\n";
+	
+	f_Map.clear();
+	f_Map.seekg(0, f_Map.beg);
+
+	std::cout << "We stiil good\n";
+	
+	len = 0;
+	wid = 0;
+
+	char c;
+	while(f_Map >> std::noskipws >> c)
+	{
+
+		std::cout << "Once again good\n";
+
+		if(c == 'F')
+			m_Tiles[wid][len].m_Type = Tile::EMPTY;
+		else if(c == 'S')
+		{
+			m_Tiles[wid][len].m_Type = Tile::EMPTY;
+			spawnPoint.x = TILESIZE * wid;
+			spawnPoint.y = TILESIZE * len;
+		}
+		else
+			m_Tiles[wid][len].m_Type = Tile::TILE1;
+
+		wid++;
+		if(wid == m_Width) //Maybe change to m_Width - 1?
+			len++;
+	}
+	
+	std::cout << "We aren't supposed to be this good nigga\n";
+
+	f_Map.close();
+	
+	//PrepareMap();
+}
+
 void Map::PrepareMap()
 {
+	bool put = false;
 	for(USI i = 0; i < m_Width; i++)
 	{	
 		for(USI j = m_Length - 1; j > 0; j--)
@@ -71,93 +136,14 @@ void Map::PrepareMap()
 			{
 				spawnPoint.x = TILESIZE * i;
 				spawnPoint.y = TILESIZE * j;
+				put = true;
 			}
 		}
 	}
+
+	if(!put)
+		std::cout << "Could not automatically put spawn point\n";
 }
-
-std::vector<Tile> Map::GetCollidingTiles(CollisionBox col_box) const
-{
-	const int firstRow = col_box.Bottom() / TILESIZE;
-	const int lastRow = col_box.Top() / TILESIZE;
-	const int firstCol = col_box.Left() / TILESIZE;
-	const int lastCol = col_box.Right() / TILESIZE;
-	std::vector<Tile> colTiles;
-	//UtilFn::Print2Values(firstRow, lastRow);
-	//UtilFn::Print2Values(firstCol, lastCol);
-	
-	for(int i = firstCol; i <= lastCol; i++)
-	{
-		//std::cout << "rooolling FAAAAAAAAAAAAAAAAAAAAAAAA";
-		for(int j = firstRow; j <= lastRow; j++) //FIRST ROW LST ROW IS BAD SEND HELPO
-		{
-			//UtilFn::Print2Values(i, j);
-			
-			colTiles.push_back(m_Tiles[i][j]);
-			//std::cout << "AAAAAAAAAAAAST";
-		}
-		//std::cout << std::endl;
-	}
-	
-	return colTiles;
-}
-
-std::vector<CollisionBox> Map::GetCollidingTilesF(CollisionBox col_box) const
-{
-	const int firstRow = col_box.Bottom() / TILESIZE;
-	const int lastRow = col_box.Top() / TILESIZE;
-	const int firstCol = col_box.Left() / TILESIZE;
-	const int lastCol = col_box.Right() / TILESIZE;
-	std::vector<CollisionBox> colTiles;
-	//UtilFn::Print2Values(firstRow, lastRow);
-	//UtilFn::Print2Values(firstCol, lastCol);
-	
-	for(int i = firstCol; i <= lastCol + 1; i++)
-	{
-		//std::cout << "rooolling FAAAAAAAAAAAAAAAAAAAAAAAA";
-		for(int j = firstRow; j <= lastRow + 1; j++) //FIRST ROW LST ROW IS BAD SEND HELPO
-		{
-			//UtilFn::Print2Values(i, j);
-			
-			if(m_Tiles[i][j].m_Type == Tile::TILE1)
-			{
-				CollisionBox nBox(i * TILESIZE, j * TILESIZE, TILESIZE, TILESIZE);
-				
-				colTiles.push_back(nBox);
-			}
-			//std::cout << "AAAAAAAAAAAAST";
-		}
-		//std::cout << std::endl;
-	}
-	
-	return colTiles;
-}
-
-
-/*std::vector<Tile&> Map::GetCollidingTilesF(CollisionBox col_box) const
-{
-	const int firstRow = col_box.Bottom() / TILESIZE;
-	const int lastRow = col_box.Top() / TILESIZE;
-	const int firstCol = col_box.Left() / TILESIZE;
-	const int lastCol = col_box.Right() / TILESIZE;
-	std::vector<Tile&> colTiles;
-	//UtilFn::Print2Values(firstRow, lastRow);
-	//UtilFn::Print2Values(firstCol, lastCol);
-	
-	for(int i = firstCol; i <= lastCol; i++)
-	{
-		//std::cout << "rooolling FAAAAAAAAAAAAAAAAAAAAAAAA";
-		for(int j = firstRow; j <= lastRow; j++) //FIRST ROW LST ROW IS BAD SEND HELPO
-		{
-			colTiles.push_back(&m_Tiles[i][j]);
-			//UtilFn::Print2Values(i, j);
-			//std::cout << "AAAAAAAAAAAAST";
-		}
-		//std::cout << std::endl;
-	}
-	
-	return colTiles;	
-}*/
 
 void Map::Render(Point2D camera_pos)
 {

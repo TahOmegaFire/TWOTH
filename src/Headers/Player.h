@@ -22,7 +22,7 @@ public:
 	
     float m_XFriction, m_XVel, m_XAccel, m_YVel, m_YAccel;
 	int curTileX1, curTileY, curTileX2;
-	bool isOnGround, jumped, leftMovement, rightMovement; //Those last ones seem pretty shitty to me brodie
+	bool isOnGround, jumped;
 };
 
 #endif // PLAYER_H
