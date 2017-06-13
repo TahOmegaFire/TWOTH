@@ -1,7 +1,10 @@
+//Header of Utils.cpp
 #ifndef UTILS_H
 #define UTILS_H
 
-struct SDL_Rect;
+#include <string>
+#include <iostream>
+#include <vector>
 
 typedef unsigned short int USI;
 struct Point2D {int x, y;};
@@ -11,27 +14,17 @@ const float GRAVITY = -0.8;
 
 namespace UtilFn
 {
-	inline bool SimpleCollisionDetection(SDL_Rect f, SDL_Rect s)
+	struct Attribute
 	{
-		int leftA, leftB; 
-		int rightA, rightB; 
-		int topA, topB; 
-		int bottomA, bottomB; 
-		
-		leftA = f.x; 
-		rightA = f.x + f.w; 
-		topA = f.y; 
-		bottomA = f.y + f.h; 
-		leftB = s.x; 
-		rightB = s.x + s.w; 
-		topB = s.y; 
-		bottomB = s.y + s.h;
-		
-		if(bottomA <= topB || topA >= bottomB || rightA <= leftB || leftA >= rightB) 
-			return false;
-		
-		return true;
-	}
+		std::string name;
+		std::string value;
+	};
+	
+	size_t SearchAttributeIndex(std::string nme, std::vector<Attribute> vector);
+	
+	std::string SearchAttributeValue(std::string nme, std::vector<Attribute> vector);
+
+	Attribute ParseMapAttribute(std::string at);
 	
 	inline void Print2Values(int f, int s)
 	{

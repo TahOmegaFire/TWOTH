@@ -1,10 +1,11 @@
-#include "headers/Entity.h"
+#include "Headers/Entity.h"
 
 Entity::Entity()
 {
     isPassable = false;
-    isLoaded = false;
-	entityType = "Null ent";
+	isLoaded = false;
+	entityType = "Null";
+	filePath = "";
 }
 
 Entity::~Entity()
@@ -22,30 +23,22 @@ bool Entity::LoadEntity(const char* path)
         std::string line;
         while(getline(file, line))
         {
-            if(line.substr(0, 3) == "img")
-            {
-                if(!m_Texture.LoadTexture(line.substr(6).c_str(), false))
-                   return false;
-			   
-                std::cout << "YEAH LOADED HAHA\n";
-				collisionBox.m_W = m_Texture.m_Width;
-				collisionBox.m_H = m_Texture.m_Height;
-            }
-
-            else if(line.substr(0,3) == "pss")
-            {
-                if(line.substr(6) == "0")
-                    isPassable = false;
-                else
-                    isPassable = true;
-            }
+			UtilFn::Attribute nAt;
+			nAt.name = line.substr(0, 3);
+			nAt.value = line.substr(6);
 			
-			else if(line.substr(0, 3) == "tpe")
-				entityType = line.substr(6);
+			if(nAt.name == "img")
+			{
+				if(!m_Texture.LoadTexture(nAt.value.c_str(), false))
+				   return false;
+			}
+			
+			m_Attributes.push_back(nAt);
         }
         file.close();
 
         isLoaded = true;
+		filePath = path;
         return true;
     }
 

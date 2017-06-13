@@ -4,9 +4,14 @@
 #include "Tile.h"
 #include "TexW.h"
 #include "Utils.h"
-//#include "Player.h"
 #include "CollisionBox.h"
+#include <fstream>
+#include <istream>
+#include <sstream>
 #include <vector>
+#include <cstring>
+#include <cstdlib>
+
 
 class Map
 {
@@ -15,12 +20,10 @@ public:
     ~Map();
 	
     std::vector<std::vector<Tile> > m_Tiles;
-	std::vector<Tile> GetCollidingTiles(CollisionBox) const;
-	std::vector<CollisionBox> GetCollidingTilesF(CollisionBox) const;
-	//std::vector<Tile&> GetCollidingTilesF(CollisionBox) const;
 	
 	void CleanMap();
 	void CreateTestMap();
+	void LoadMap(std::string);
 	void PrepareMap();
 	void Render(Point2D);
 	void Update();
